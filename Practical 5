@@ -1,0 +1,24 @@
+Program Code (1 ms Delay Example)
+MOV TMOD, #01H    ; Timer0, Mode1
+MOV TH0, #0FCH    ; Load 1 ms value (65536 – 1000 = 64536 = FC18H)
+MOV TL0, #018H
+SETB TR0          ; Start timer
+WAIT: JNB TF0, WAIT
+CLR TR0
+CLR TF0
+SJMP $
+Blink LED Delay Example
+START: MOV P1, #00H
+       ACALL DELAY
+       MOV P1, #0FFH
+       ACALL DELAY
+       SJMP START
+
+DELAY: MOV TMOD, #01H
+       MOV TH0, #0FCH
+       MOV TL0, #018H
+       SETB TR0
+AGAIN: JNB TF0, AGAIN
+       CLR TR0
+       CLR TF0
+       RET
