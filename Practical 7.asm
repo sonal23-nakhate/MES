@@ -1,0 +1,62 @@
+Program Code
+LCD_DATA EQU P2
+RS EQU P3.5
+RW EQU P3.6
+EN EQU P3.7
+
+ACALL INIT
+ACALL CMD
+ACALL MSG
+SJMP $
+
+; Initialize LCD
+INIT:
+    MOV A, #38H
+    ACALL CMD
+    MOV A, #0EH
+    ACALL CMD
+    MOV A, #01H
+    ACALL CMD
+    RET
+
+; Send Command
+CMD:
+    CLR RS
+    CLR RW
+    MOV LCD_DATA, A
+    SETB EN
+    ACALL DELAY
+    CLR EN
+    RET
+
+; Send Data
+WRITE:
+    SETB RS
+    CLR RW
+    MOV LCD_DATA, A
+    SETB EN
+    ACALL DELAY
+    CLR EN
+    RET
+
+; Display Message
+MSG:
+    MOV DPTR, #TEXT
+NEXT:
+    CLR A
+    MOVC A, @A+DPTR
+    JZ DONE
+    ACALL WRITE
+    INC DPTR
+    SJMP NEXT
+DONE: RET
+
+DELAY:
+    MOV R7, #255
+H1: MOV R6, #255
+H2: DJNZ R6, H2
+    DJNZ R7, H1
+    RET
+
+TEXT: DB "MICROCONTROLLER", 00H
+END
